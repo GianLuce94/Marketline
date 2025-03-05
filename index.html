@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Marketplace Usati e Nuovi</title>
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
+            color: #333;
+        }
+        header {
+            background: #007bff;
+            color: white;
+            padding: 15px;
+            text-align: center;
+        }
+        nav ul {
+            list-style: none;
+            padding: 0;
+        }
+        nav ul li {
+            display: inline;
+            margin: 0 15px;
+        }
+        nav ul li a {
+            color: white;
+            text-decoration: none;
+            font-weight: bold;
+            cursor: pointer;
+        }
+        main {
+            padding: 20px;
+        }
+        section {
+            display: none;
+            background: white;
+            padding: 20px;
+            margin-bottom: 20px;
+            border-radius: 8px;
+            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+        }
+        section.active {
+            display: block;
+        }
+        footer {
+            text-align: center;
+            padding: 10px;
+            background: #007bff;
+            color: white;
+        }
+        .error {
+            color: red;
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Marketplace Usati e Nuovi</h1>
+        <nav>
+            <ul>
+                <li><a onclick="showSection('home')">Home</a></li>
+                <li><a onclick="showSection('account')">Account</a></li>
+                <li><a onclick="showSection('categorie')">Categorie</a></li>
+                <li><a onclick="showSection('vendita')">Vendi</a></li>
+                <li><a onclick="showSection('aste')">Aste</a></li>
+                <li id="adminNav" style="display: none;"><a onclick="showSection('admin')">Gestione Admin</a></li>
+                <li><a onclick="showSection('chat')">Chat</a></li>
+                <li id="loginNav"><a onclick="handleLoginLogout()">Login</a></li>
+            </ul>
+        </nav>
+        <input type="text" placeholder="Cerca prodotti..." id="search" onkeyup="searchProducts()">
+    </header>
+    
+    <main>
+        <section id="login" class="active">
+            <h2>Accedi</h2>
+            <form onsubmit="return loginUser(event)">
+                <label for="username">Username o Email:</label>
+                <input type="text" id="username" required>
+                <label for="password">Password:</label>
+                <input type="password" id="password" required>
+                <button type="submit">Accedi</button>
+                <p class="error" id="loginError">Credenziali errate. Riprova.</p>
+            </form>
+        </section>
+        
+        <section id="account">
+            <h2>Benvenuto nel tuo account</h2>
+            <p>Accedi per monitorare i tuoi acquisti e le tue vendite, aggiornare i tuoi dati e fare offerte personalizzate sui prodotti.</p>
+            <button onclick="showSection('gestioneProfilo')">Gestione Profilo</button>
+            <button onclick="showSection('impostazioniPagamento')">Impostazioni di Pagamento</button>
+            <button onclick="showSection('wallet')">Wallet</button>
+        </section>
+        
+        <section id="categorie">
+            <h2>Categorie</h2>
+            <ul id="productList">
+                <li data-name="Telefono">Telefono - iPhone 12</li>
+                <li data-name="Laptop">Laptop - MacBook Pro</li>
+                <li data-name="Cuffie">Cuffie - Bose 700</li>
+                <li data-name="Console">Console - PlayStation 5</li>
+            </ul>
+        </section>
+        
+        <section id="vendita">
+            <h2>Pubblica un prodotto in vendita</h2>
+            <form>
+                <label for="productTitle">Titolo:</label>
+                <input type="text" id="productTitle" required>
+                
+                <label for="productDescription">Descrizione:</label>
+                <textarea id="productDescription" required></textarea>
+                
+                <label for="productPrice">Prezzo (€):</label>
+                <input type="number" id="productPrice" required>
+                
+                <label for="productCategory">Categoria:</label>
+                <select id="productCategory">
+                    <option value="elettronica">Elettronica</option>
+                    <option value="abbigliamento">Abbigliamento</option>
+                    <option value="casa">Casa</option>
+                    <option value="sport">Sport</option>
+                </select>
+                
+                <label for="productImage">Carica immagine:</label>
+                <input type="file" id="productImage" accept="image/*">
+                
+                <button type="submit">Pubblica</button>
+            </form>
+        </section>
+    </main>
+    
+    <footer>
+        <p>&copy; 2025 Marketplace Usati e Nuovi</p>
+    </footer>
+    
+    <script>
+        let loggedInUser = null;
+        
+        function showSection(sectionId) {
+            if (!loggedInUser && sectionId !== 'login') {
+                alert("Devi accedere per visualizzare questa sezione.");
+                return;
+            }
+            document.querySelectorAll('section').forEach(section => {
+                section.classList.remove('active');
+            });
+            document.getElementById(sectionId).classList.add('active');
+        }
+
+        function searchProducts() {
+            let input = document.getElementById("search").value.toLowerCase();
+            let items = document.querySelectorAll("#productList li");
+            items.forEach(item => {
+                let name = item.getAttribute("data-name").toLowerCase();
+                if (name.includes(input)) {
+                    item.style.display = "list-item";
+                } else {
+                    item.style.display = "none";
+                }
+            });
+        }
+    </script>
+</body>
+</html>
