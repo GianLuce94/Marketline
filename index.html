@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Marketplace Usati e Nuovi</title>
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
+            color: #333;
+        }
+        header {
+            background: #007bff;
+            color: white;
+            padding: 15px;
+            text-align: center;
+        }
+        nav ul {
+            list-style: none;
+            padding: 0;
+        }
+        nav ul li {
+            display: inline;
+            margin: 0 15px;
+        }
+        nav ul li a {
+            color: white;
+            text-decoration: none;
+            font-weight: bold;
+            cursor: pointer;
+        }
+        main {
+            padding: 20px;
+        }
+        section {
+            display: none;
+            background: white;
+            padding: 20px;
+            margin-bottom: 20px;
+            border-radius: 8px;
+            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+        }
+        section.active {
+            display: block;
+        }
+        footer {
+            text-align: center;
+            padding: 10px;
+            background: #007bff;
+            color: white;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Marketplace Usati e Nuovi</h1>
+        <nav>
+            <ul>
+                <li><a onclick="showSection('home')">Home</a></li>
+                <li><a onclick="showSection('account')">Account</a></li>
+                <li><a onclick="showSection('categorie')">Categorie</a></li>
+                <li><a onclick="showSection('vendita')">Vendi</a></li>
+                <li><a onclick="showSection('aste')">Aste</a></li>
+                <li id="adminNav" style="display: none;"><a onclick="showSection('admin')">Gestione Admin</a></li>
+                <li><a onclick="showSection('chat')">Chat</a></li>
+            </ul>
+        </nav>
+        <input type="text" placeholder="Cerca prodotti..." id="search" onkeyup="searchProducts()">
+    </header>
+    <main>
+        <section id="account">
+            <h2>Benvenuto nel tuo account</h2>
+            <p>Accedi per monitorare i tuoi acquisti e le tue vendite, aggiornare i tuoi dati e fare offerte personalizzate sui prodotti.</p>
+            <button onclick="showSection('gestioneProfilo')">Gestione Profilo</button>
+            <button onclick="showSection('impostazioniPagamento')">Impostazioni di Pagamento</button>
+            <button onclick="showSection('wallet')">Wallet</button>
+        </section>
+        <section id="categorie">
+            <h2>Categorie</h2>
+            <ul id="productList">
+                <li data-name="Telefono">Telefono - iPhone 12</li>
+                <li data-name="Laptop">Laptop - MacBook Pro</li>
+                <li data-name="Cuffie">Cuffie - Bose 700</li>
+                <li data-name="Console">Console - PlayStation 5</li>
+            </ul>
+        </section>
+    </main>
+    <footer>
+        <p>&copy; 2025 Marketplace Usati e Nuovi</p>
+    </footer>
+    <script>
+        function showSection(sectionId) {
+            document.querySelectorAll('section').forEach(section => {
+                section.classList.remove('active');
+            });
+            document.getElementById(sectionId).classList.add('active');
+        }
+
+        function searchProducts() {
+            let input = document.getElementById("search").value.toLowerCase();
+            let items = document.querySelectorAll("#productList li");
+            items.forEach(item => {
+                let name = item.getAttribute("data-name").toLowerCase();
+                if (name.includes(input)) {
+                    item.style.display = "list-item";
+                } else {
+                    item.style.display = "none";
+                }
+            });
+        }
+    </script>
+</body>
+</html>
