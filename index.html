@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Marketplace Usati e Nuovi</title>
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
+            color: #333;
+        }
+        header {
+            background: #007bff;
+            color: white;
+            padding: 15px;
+            text-align: center;
+        }
+        nav ul {
+            list-style: none;
+            padding: 0;
+        }
+        nav ul li {
+            display: inline;
+            margin: 0 15px;
+        }
+        nav ul li a {
+            color: white;
+            text-decoration: none;
+            font-weight: bold;
+            cursor: pointer;
+        }
+        main {
+            padding: 20px;
+        }
+        section {
+            display: none;
+            background: white;
+            padding: 20px;
+            margin-bottom: 20px;
+            border-radius: 8px;
+            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+        }
+        section.active {
+            display: block;
+        }
+        footer {
+            text-align: center;
+            padding: 10px;
+            background: #007bff;
+            color: white;
+        }
+        .error {
+            color: red;
+            display: none;
+        }
+    </style>
+</head>
+<body onload="checkLoginStatus()">
+    <header>
+        <h1>Marketplace Usati e Nuovi</h1>
+        <nav>
+            <ul>
+                <li><a href="#" onclick="showSection('home')">Home</a></li>
+                <li><a href="#" onclick="showSection('account')">Account</a></li>
+                <li><a href="#" onclick="showSection('categorie')">Categorie</a></li>
+                <li><a href="#" onclick="showSection('vendita')">Vendi</a></li>
+                <li><a href="#" onclick="showSection('aste')">Aste</a></li>
+                <li id="adminNav" style="display: none;"><a href="#" onclick="showSection('admin')">Gestione Admin</a></li>
+                <li id="siteAccountNav" style="display: none;"><a href="#" onclick="showSection('siteAccount')">Conto Sito</a></li>
+                <li><a href="#" onclick="showSection('chat')">Chat</a></li>
+                <li id="loginNav"><a href="#" onclick="handleLoginLogout()">Login</a></li>
+            </ul>
+        </nav>
+        <input type="text" placeholder="Cerca prodotti..." id="search">
+        <button onclick="searchProducts()">Cerca</button>
+    </header>
+    
+    <main>
+        <section id="home" class="active">
+            <h2>Benvenuto nel Marketplace</h2>
+            <p>Scopri prodotti in vendita e all'asta.</p>
+        </section>
+        
+        <section id="login">
+            <h2>Accedi</h2>
+            <form onsubmit="return loginUser(event)">
+                <label for="username">Username o Email:</label>
+                <input type="text" id="username" required>
+                <label for="password">Password:</label>
+                <input type="password" id="password" required>
+                <button type="submit">Accedi</button>
+                <p class="error" id="loginError">Credenziali errate. Riprova.</p>
+            </form>
+        </section>
+        
+        <section id="account">
+            <h2>Benvenuto nel tuo Account</h2>
+            <p>Accedi per monitorare i tuoi acquisti e vendite, aggiornare i tuoi dati e fare offerte.</p>
+        </section>
+        
+        <section id="siteAccount">
+            <h2>Gestione Conto del Sito</h2>
+            <p>Saldo attuale del sito: <strong>€<span id="siteBalance">0.00</span></strong></p>
+            <p>Gestisci le transazioni e il bilancio del sito.</p>
+        </section>
+    </main>
+    
+    <footer>
+        <p>&copy; 2025 Marketplace Usati e Nuovi</p>
+    </footer>
+    
+    <script>
+        let loggedInUser = null;
+
+        function checkLoginStatus() {
+            let storedUser = localStorage.getItem("loggedInUser");
+            if (storedUser) {
+                loggedInUser = storedUser;
+                document.getElementById("login").style.display = "none";
+                showSection("account");
+                document.getElementById("loginNav").innerHTML = '<a href="#" onclick="handleLoginLogout()">Logout</a>';
+                if (loggedInUser === "admin") {
+                    document.getElementById("adminNav").style.display = "inline";
+                    document.getElementById("siteAccountNav").style.display = "inline";
+                }
+            }
+        }
+
+        function showSection(sectionId) {
+            if (!loggedInUser && sectionId !== 'login' && sectionId !== 'home') {
+                alert("Devi accedere per visualizzare questa sezione.");
+                return;
+            }
+            document.querySelectorAll('section').forEach(section => {
+                section.classList.remove('active');
+            });
+            document.getElementById(sectionId).classList.add('active');
+        }
+
+        function loginUser(event) {
+            event.preventDefault();
+            let username = document.getElementById("username").value;
+            let password = document.getElementById("password").value;
+            if (username === "admin" && password === "password") {
+                loggedInUser = username;
+                localStorage.setItem("loggedInUser", username);
+                checkLoginStatus();
+            } else {
+                document.getElementById("loginError").style.display = "block";
+            }
+        }
+
+        function handleLoginLogout() {
+            if (loggedInUser) {
+                localStorage.removeItem("loggedInUser");
+                loggedInUser = null;
+                location.reload();
+            } else {
+                showSection('login');
+            }
+        }
+    </script>
+</body>
+</html>
