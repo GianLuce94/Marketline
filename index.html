@@ -1,0 +1,71 @@
+const express = require('express');
+const mongoose = require('mongoose');
+const bcrypt = require('bcrypt');
+const jwt = require('jsonwebtoken');
+const cors = require('cors');
+require('dotenv').config();
+
+const app = express();
+app.use(express.json());
+app.use(cors());
+
+// Connessione a MongoDB
+mongoose.connect(process.env.MONGO_URI, {
+    useNewUrlParser: true,
+    useUnifiedTopology: true
+}).then(() => console.log("MongoDB Connesso"))
+  .catch(err => console.error(err));
+
+// Modello Utente
+const UserSchema = new mongoose.Schema({
+    username: String,
+    email: { type: String, unique: true },
+    password: String,
+    wallet: { type: Number, default: 0 }
+});
+const User = mongoose.model('User', UserSchema);
+
+// Registrazione
+app.post('/register', async (req, res) => {
+    const { username, email, password } = req.body;
+    try {
+        const hashedPassword = await bcrypt.hash(password, 10);
+        const newUser = new User({ username, email, password: hashedPassword });
+        await newUser.save();
+        res.status(201).json({ message: "Registrazione completata" });
+    } catch (error) {
+        res.status(400).json({ error: "Errore durante la registrazione" });
+    }
+});
+
+// Login
+app.post('/login', async (req, res) => {
+    const { email, password } = req.body;
+    try {
+        const user = await User.findOne({ email });
+        if (!user) return res.status(400).json({ error: "Utente non trovato" });
+        
+        const isMatch = await bcrypt.compare(password, user.password);
+        if (!isMatch) return res.status(400).json({ error: "Password errata" });
+        
+        const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, { expiresIn: '24h' });
+        res.json({ token, wallet: user.wallet });
+    } catch (error) {
+        res.status(500).json({ error: "Errore durante il login" });
+    }
+});
+
+// Ottenere il saldo del Wallet
+app.get('/wallet/:userId', async (req, res) => {
+    try {
+        const user = await User.findById(req.params.userId);
+        if (!user) return res.status(404).json({ error: "Utente non trovato" });
+        res.json({ wallet: user.wallet });
+    } catch (error) {
+        res.status(500).json({ error: "Errore nel recupero del wallet" });
+    }
+});
+
+// Avvio server
+const PORT = process.env.PORT || 5000;
+app.listen(PORT, () => console.log(`Server avviato sulla porta ${PORT}`));
